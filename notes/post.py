@@ -2,7 +2,7 @@ from .config import Config
 from .store import FirebaseStore
 
 
-class Notes(object):
+class Posts(object):
 
     def __init__(self):
         self.store = FirebaseStore('notes')

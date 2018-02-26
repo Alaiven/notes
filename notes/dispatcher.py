@@ -1,17 +1,44 @@
-from .note import Notes
+from .post import Posts
+from .category import Categories
+from .user import Users
+from clint.textui import puts
 
+_type_keys = ['p', 'post', 'u', 'user', 'c', 'category', 'o', 'options']
 
 _add_keys = ['-a', '-add', '--a', '--add']
 _get_keys = ['-l', '-list', '--l', '--list']
+_del_keys = ['-d', '-delete', '--d', '--delete']
+
+_dispatch_dict = {
+    'p': lambda: Posts(),
+    'u': lambda: Users(),
+    'c': lambda: Categories(),
+    'o': lambda: Options()
+}
 
 
 def dispatch(arguments):
+    type_arg = arguments.keys()[0]
+
+    if type_arg in _type_keys:
+        type_letter = type_arg[0]
+        _dispatch_action(_dispatch_dict[type_letter], arguments)
+    else:
+        puts('Object type not provided or invalid')
+    
+
+def _dispatch_action(new_object, args):
     add_key = list(_add_keys & arguments.keys())
     get_key = list(_get_keys & arguments.keys())
+    del_key = list(_del_keys & arguments.keys())
+    
+    obj = new_object()
 
     if add_key:
-        note = Notes()
-        note.add(arguments[add_key[0]])
+        new_object.add(arguments[add_key[0]])
     elif get_key:
-        note = Notes()
-        note.get(arguments[get_key[0]])
+        new_object.get(arguments[get_key[0]])
+    elif del_key:
+        new_object.delete(arguments[del_key[0]])
+    else:
+        puts('Unknown action. Possible actions: -add, -list, -delete')
